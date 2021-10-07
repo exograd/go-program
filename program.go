@@ -209,6 +209,57 @@ func (p *Program) addArgument(commandName string, arg *Argument) {
 	}
 }
 
+func (p *Program) IsOptionSet(name string) bool {
+	return p.mustOption(name).Set
+}
+
+func (p *Program) OptionValue(name string) string {
+	return p.mustOption(name).Value
+}
+
+func (p *Program) mustOption(name string) *Option {
+	if p.command != nil {
+		option, found := p.command.options[name]
+		if found {
+			return option
+		}
+	}
+
+	option, found := p.globalOptions[name]
+	if !found {
+		panicf("unknown option %q", name)
+	}
+
+	return option
+}
+
+func (p *Program) ArgumentValue(name string) string {
+	return p.mustArgument(name).Value
+}
+
+func (p *Program) TrailingArgumentValues(name string) []string {
+	return p.mustArgument(name).TrailingValues
+}
+
+func (p *Program) mustArgument(name string) *Argument {
+	var arguments []*Argument
+
+	if p.command == nil {
+		arguments = p.arguments
+	} else {
+		arguments = p.command.arguments
+	}
+
+	for _, argument := range arguments {
+		if name == argument.Name {
+			return argument
+		}
+	}
+
+	panicf("unknown argument %q", name)
+	return nil // make the compiler happy
+}
+
 func (p *Program) Info(format string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, format+"\n", args...)
 }
@@ -414,14 +465,6 @@ func (p *Program) usageOptions(buf *bytes.Buffer, options map[string]*Option, ma
 
 func (p *Program) Start() {
 	p.parse()
-
-	// XXX test
-	p.PrintUsage(nil)
-	p.BlankLine()
-	p.BlankLine()
-	p.BlankLine()
-	p.PrintUsage(p.commands["foo"])
-
 	p.run()
 }
 
@@ -532,7 +575,15 @@ func (p *Program) parseArguments(args []string, arguments []*Argument) []string 
 }
 
 func (p *Program) run() {
-	// TODO
+	var main func(*Program)
+
+	if p.command == nil {
+		main = p.Main
+	} else {
+		main = p.command.Main
+	}
+
+	main(p)
 }
 
 func (p *Program) fatal(format string, args ...interface{}) {

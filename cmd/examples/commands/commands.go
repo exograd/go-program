@@ -27,9 +27,22 @@ func main() {
 }
 
 func cmdFoo(p *program.Program) {
-	fmt.Println("Foo!")
+	fmt.Printf("flag-a: %v\n", p.IsOptionSet("flag-a"))
+	fmt.Printf("b: %v\n", p.IsOptionSet("b"))
+	fmt.Printf("option-c: %s\n", p.OptionValue("option-c"))
+	fmt.Printf("flag-d: %v\n", p.IsOptionSet("flag-d"))
+
+	fmt.Printf("arg-1: %s\n", p.ArgumentValue("arg-1"))
+	fmt.Printf("arg-2: %s\n", p.ArgumentValue("arg-2"))
+	fmt.Printf("arg-3:")
+	for _, value := range p.TrailingArgumentValues("arg-3") {
+		fmt.Printf(" %s", value)
+	}
+	fmt.Printf("\n")
 }
 
 func cmdBar(p *program.Program) {
-	fmt.Println("Bar!")
+	fmt.Printf("flag-a: %v\n", p.IsOptionSet("flag-a"))
+	fmt.Printf("b: %v\n", p.IsOptionSet("b"))
+	fmt.Printf("option-c: %s\n", p.OptionValue("option-c"))
 }

@@ -25,5 +25,15 @@ func main() {
 }
 
 func main2(p *program.Program) {
-	fmt.Println("Hello world!")
+	fmt.Printf("flag-a: %v\n", p.IsOptionSet("flag-a"))
+	fmt.Printf("b: %v\n", p.IsOptionSet("b"))
+	fmt.Printf("option-c: %s\n", p.OptionValue("option-c"))
+
+	fmt.Printf("arg-1: %s\n", p.ArgumentValue("arg-1"))
+	fmt.Printf("arg-2: %s\n", p.ArgumentValue("arg-2"))
+	fmt.Printf("arg-3:")
+	for _, value := range p.TrailingArgumentValues("arg-3") {
+		fmt.Printf(" %s", value)
+	}
+	fmt.Printf("\n")
 }
