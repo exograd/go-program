@@ -10,6 +10,10 @@ func (p *Program) parse() {
 
 	args = p.parseOptions(args, p.globalOptions)
 
+	if p.IsOptionSet("help") {
+		return
+	}
+
 	if len(p.commands) > 0 {
 		args = p.parseCommand(args)
 

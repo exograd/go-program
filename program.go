@@ -277,7 +277,19 @@ func (p *Program) BlankLine() {
 }
 
 func (p *Program) Start() {
+	p.addDefaultOptions()
+
+	if len(p.commands) > 0 {
+		p.addDefaultCommands()
+	}
+
 	p.parse()
+
+	if p.IsOptionSet("help") {
+		cmdHelp(p)
+		os.Exit(0)
+	}
+
 	p.run()
 }
 
@@ -291,6 +303,42 @@ func (p *Program) run() {
 	}
 
 	main(p)
+}
+
+func (p *Program) addDefaultOptions() {
+	p.AddGlobalFlag("h", "help", "print help and exit")
+}
+
+func (p *Program) addDefaultCommands() {
+	p.AddCommand("help", "print help and exit", cmdHelp)
+	p.AddCommandTrailingArgument("help", "command",
+		"the name of the command(s)")
+}
+
+func cmdHelp(p *Program) {
+	var commandNames []string
+	if p.command != nil {
+		commandNames = p.TrailingArgumentValues("command")
+	}
+
+	if len(commandNames) == 0 {
+		p.PrintUsage(nil)
+	} else {
+		for i, commandName := range commandNames {
+			if i > 0 {
+				p.BlankLine()
+				p.BlankLine()
+			}
+
+			command, found := p.commands[commandName]
+			if !found {
+				p.Error("unknown command %q", commandName)
+				os.Exit(1)
+			}
+
+			p.PrintUsage(command)
+		}
+	}
 }
 
 func (p *Program) fatal(format string, args ...interface{}) {
