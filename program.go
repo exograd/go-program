@@ -209,6 +209,14 @@ func (p *Program) addArgument(commandName string, arg *Argument) {
 	}
 }
 
+func (p *Program) CommandName() string {
+	if len(p.commands) == 0 {
+		panicf("no command defined")
+	}
+
+	return p.command.Name
+}
+
 func (p *Program) IsOptionSet(name string) bool {
 	return p.mustOption(name).Set
 }
