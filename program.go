@@ -292,6 +292,11 @@ func (p *Program) Error(format string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, "error: "+format+"\n", args...)
 }
 
+func (p *Program) Fatal(format string, args ...interface{}) {
+	p.Error(format, args...)
+	os.Exit(1)
+}
+
 func (p *Program) Start() {
 	p.addDefaultOptions()
 
