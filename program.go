@@ -293,7 +293,7 @@ func (p *Program) Fatal(format string, args ...interface{}) {
 	os.Exit(1)
 }
 
-func (p *Program) Start() {
+func (p *Program) Run() {
 	p.addDefaultOptions()
 
 	if len(p.commands) > 0 {
@@ -309,12 +309,7 @@ func (p *Program) Start() {
 
 	p.verbose = p.IsOptionSet("verbose")
 
-	p.run()
-}
-
-func (p *Program) run() {
 	var main Main
-
 	if p.command == nil {
 		main = p.Main
 	} else {

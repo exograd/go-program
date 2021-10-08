@@ -39,7 +39,7 @@ func main() {
 
 	p.AddCommand("bar", "bar command", cmdBar)
 
-	p.Start()
+	p.Run()
 }
 
 func cmdFoo(p *program.Program) {

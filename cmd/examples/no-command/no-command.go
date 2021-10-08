@@ -35,7 +35,7 @@ func main() {
 
 	p.SetMain(main2)
 
-	p.Start()
+	p.Run()
 }
 
 func main2(p *program.Program) {
