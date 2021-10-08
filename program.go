@@ -19,10 +19,12 @@ import (
 	"os"
 )
 
+type Main func(*Program)
+
 type Program struct {
 	Name        string
 	Description string
-	Main        func(*Program)
+	Main        Main
 
 	commands      map[string]*Command
 	globalOptions map[string]*Option
@@ -36,7 +38,7 @@ type Program struct {
 type Command struct {
 	Name        string
 	Description string
-	Main        func(*Program)
+	Main        Main
 
 	options   map[string]*Option
 	arguments []*Argument
@@ -73,7 +75,7 @@ func NewProgram(name, description string) *Program {
 	}
 }
 
-func (p *Program) SetMain(main func(*Program)) {
+func (p *Program) SetMain(main Main) {
 	if len(p.commands) > 0 {
 		panic("cannot have a main function with commands")
 	}
@@ -81,7 +83,7 @@ func (p *Program) SetMain(main func(*Program)) {
 	p.Main = main
 }
 
-func (p *Program) AddCommand(name, description string, main func(*Program)) {
+func (p *Program) AddCommand(name, description string, main Main) {
 	if p.Main != nil {
 		panic("cannot have a main function with commands")
 	}
@@ -317,7 +319,7 @@ func (p *Program) Start() {
 }
 
 func (p *Program) run() {
-	var main func(*Program)
+	var main Main
 
 	if p.command == nil {
 		main = p.Main
