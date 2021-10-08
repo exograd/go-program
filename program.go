@@ -272,10 +272,6 @@ func (p *Program) Error(format string, args ...interface{}) {
 	fmt.Fprintf(os.Stderr, "error: "+format+"\n", args...)
 }
 
-func (p *Program) BlankLine() {
-	fmt.Fprintln(os.Stderr, "")
-}
-
 func (p *Program) Start() {
 	p.addDefaultOptions()
 
@@ -326,8 +322,8 @@ func cmdHelp(p *Program) {
 	} else {
 		for i, commandName := range commandNames {
 			if i > 0 {
-				p.BlankLine()
-				p.BlankLine()
+				p.Info("")
+				p.Info("")
 			}
 
 			command, found := p.commands[commandName]
@@ -343,7 +339,8 @@ func cmdHelp(p *Program) {
 
 func (p *Program) fatal(format string, args ...interface{}) {
 	p.Error(format, args...)
-	p.BlankLine()
+
+	p.Info("")
 
 	if p.command == nil {
 		p.PrintUsage(nil)
