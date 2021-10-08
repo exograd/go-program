@@ -24,9 +24,9 @@ func main() {
 	p := program.NewProgram("no-command",
 		"an example program without any command")
 
-	p.AddGlobalFlag("", "flag-a", "a long flag")
-	p.AddGlobalFlag("b", "", "a short flag")
-	p.AddGlobalOption("c", "option-c", "value", "foo",
+	p.AddFlag("", "flag-a", "a long flag")
+	p.AddFlag("b", "", "a short flag")
+	p.AddOption("c", "option-c", "value", "foo",
 		"an option with both a short and long name")
 
 	p.AddArgument("arg-1", "the first argument")

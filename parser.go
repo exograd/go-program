@@ -22,7 +22,7 @@ import (
 func (p *Program) parse() {
 	args := os.Args[1:]
 
-	args = p.parseOptions(args, p.globalOptions)
+	args = p.parseOptions(args, p.options)
 
 	if p.IsOptionSet("help") {
 		return
@@ -32,7 +32,7 @@ func (p *Program) parse() {
 		args = p.parseCommand(args)
 
 		options := make(map[string]*Option)
-		for name, opt := range p.globalOptions {
+		for name, opt := range p.options {
 			options[name] = opt
 		}
 		for name, opt := range p.command.options {

@@ -26,9 +26,9 @@ type Program struct {
 	Description string
 	Main        Main
 
-	commands      map[string]*Command
-	globalOptions map[string]*Option
-	arguments     []*Argument
+	commands  map[string]*Command
+	options   map[string]*Option
+	arguments []*Argument
 
 	command *Command
 
@@ -39,6 +39,8 @@ type Command struct {
 	Name        string
 	Description string
 	Main        Main
+
+	program *Program
 
 	options   map[string]*Option
 	arguments []*Argument
@@ -71,7 +73,7 @@ func NewProgram(name, description string) *Program {
 
 		commands: make(map[string]*Command),
 
-		globalOptions: make(map[string]*Option),
+		options: make(map[string]*Option),
 	}
 }
 
@@ -83,21 +85,27 @@ func (p *Program) SetMain(main Main) {
 	p.Main = main
 }
 
-func (p *Program) AddCommand(name, description string, main Main) {
+func (p *Program) AddCommand(name, description string, main Main) *Command {
 	if p.Main != nil {
 		panic("cannot have a main function with commands")
 	}
 
-	p.commands[name] = &Command{
+	c := &Command{
 		Name:        name,
 		Description: description,
 		Main:        main,
 
+		program: p,
+
 		options: make(map[string]*Option),
 	}
+
+	p.commands[name] = c
+
+	return c
 }
 
-func (p *Program) AddGlobalOption(shortName, longName, valueName, defaultValue, description string) {
+func (p *Program) AddOption(shortName, longName, valueName, defaultValue, description string) {
 	option := &Option{
 		ShortName:    shortName,
 		LongName:     longName,
@@ -106,14 +114,14 @@ func (p *Program) AddGlobalOption(shortName, longName, valueName, defaultValue, 
 		Description:  description,
 	}
 
-	p.addOption("", option)
+	p.addOption(nil, option)
 }
 
-func (p *Program) AddGlobalFlag(shortName, longName, description string) {
-	p.AddGlobalOption(shortName, longName, "", "", description)
+func (p *Program) AddFlag(shortName, longName, description string) {
+	p.AddOption(shortName, longName, "", "", description)
 }
 
-func (p *Program) AddCommandOption(commandName, shortName, longName, valueName, defaultValue, description string) {
+func (c *Command) AddOption(shortName, longName, valueName, defaultValue, description string) {
 	option := &Option{
 		ShortName:    shortName,
 		LongName:     longName,
@@ -122,29 +130,24 @@ func (p *Program) AddCommandOption(commandName, shortName, longName, valueName, 
 		Description:  description,
 	}
 
-	p.addOption(commandName, option)
+	c.program.addOption(c, option)
 }
 
-func (p *Program) AddCommandFlag(commandName, shortName, longName, description string) {
-	p.AddCommandOption(commandName, shortName, longName, "", "", description)
+func (c *Command) AddFlag(shortName, longName, description string) {
+	c.AddOption(shortName, longName, "", "", description)
 }
 
-func (p *Program) addOption(commandName string, option *Option) {
+func (p *Program) addOption(c *Command, option *Option) {
 	var m map[string]*Option
 
 	if option.ShortName == "" && option.LongName == "" {
 		panic("command has no short or long name")
 	}
 
-	if commandName == "" {
-		m = p.globalOptions
+	if c == nil {
+		m = p.options
 	} else {
-		command, found := p.commands[commandName]
-		if !found {
-			panicf("unknown command %q", commandName)
-		}
-
-		m = command.options
+		m = c.options
 	}
 
 	if option.ShortName != "" {
@@ -152,8 +155,10 @@ func (p *Program) addOption(commandName string, option *Option) {
 			panicf("duplicate option name %q", option.ShortName)
 		}
 
-		if _, found := p.globalOptions[option.ShortName]; found {
-			panicf("duplicate option name %q", option.ShortName)
+		if c != nil {
+			if _, found := c.program.options[option.ShortName]; found {
+				panicf("duplicate option name %q", option.ShortName)
+			}
 		}
 
 		m[option.ShortName] = option
@@ -164,8 +169,10 @@ func (p *Program) addOption(commandName string, option *Option) {
 			panicf("duplicate option name %q", option.LongName)
 		}
 
-		if _, found := p.globalOptions[option.LongName]; found {
-			panicf("duplicate option name %q", option.LongName)
+		if c != nil {
+			if _, found := c.program.options[option.LongName]; found {
+				panicf("duplicate option name %q", option.LongName)
+			}
 		}
 
 		m[option.LongName] = option
@@ -178,7 +185,7 @@ func (p *Program) AddArgument(name, description string) {
 		Description: description,
 	}
 
-	p.addArgument("", arg)
+	p.arguments = append(p.arguments, arg)
 }
 
 func (p *Program) AddTrailingArgument(name, description string) {
@@ -188,39 +195,26 @@ func (p *Program) AddTrailingArgument(name, description string) {
 		Trailing:    true,
 	}
 
-	p.addArgument("", arg)
+	p.arguments = append(p.arguments, arg)
 }
 
-func (p *Program) AddCommandArgument(commandName, name, description string) {
+func (c *Command) AddArgument(name, description string) {
 	arg := &Argument{
 		Name:        name,
 		Description: description,
 	}
 
-	p.addArgument(commandName, arg)
+	c.arguments = append(c.arguments, arg)
 }
 
-func (p *Program) AddCommandTrailingArgument(commandName, name, description string) {
+func (c *Command) AddTrailingArgument(name, description string) {
 	arg := &Argument{
 		Name:        name,
 		Description: description,
 		Trailing:    true,
 	}
 
-	p.addArgument(commandName, arg)
-}
-
-func (p *Program) addArgument(commandName string, arg *Argument) {
-	if commandName == "" {
-		p.arguments = append(p.arguments, arg)
-	} else {
-		command, found := p.commands[commandName]
-		if !found {
-			panic(fmt.Sprintf("unknown command %q", commandName))
-		}
-
-		command.arguments = append(command.arguments, arg)
-	}
+	c.arguments = append(c.arguments, arg)
 }
 
 func (p *Program) CommandName() string {
@@ -247,7 +241,7 @@ func (p *Program) mustOption(name string) *Option {
 		}
 	}
 
-	option, found := p.globalOptions[name]
+	option, found := p.options[name]
 	if !found {
 		panicf("unknown option %q", name)
 	}
@@ -331,14 +325,13 @@ func (p *Program) run() {
 }
 
 func (p *Program) addDefaultOptions() {
-	p.AddGlobalFlag("h", "help", "print help and exit")
-	p.AddGlobalFlag("v", "verbose", "print status and information messages")
+	p.AddFlag("h", "help", "print help and exit")
+	p.AddFlag("v", "verbose", "print status and information messages")
 }
 
 func (p *Program) addDefaultCommands() {
-	p.AddCommand("help", "print help and exit", cmdHelp)
-	p.AddCommandTrailingArgument("help", "command",
-		"the name of the command(s)")
+	c := p.AddCommand("help", "print help and exit", cmdHelp)
+	c.AddTrailingArgument("command", "the name of the command(s)")
 }
 
 func cmdHelp(p *Program) {

@@ -40,7 +40,7 @@ func (p *Program) PrintUsage(command *Command) {
 
 	if command == nil {
 		arguments = p.arguments
-		options = p.globalOptions
+		options = p.options
 		description = p.Description
 	} else {
 		arguments = command.arguments
@@ -113,7 +113,7 @@ func (p *Program) computeMaxWidth(command *Command) int {
 
 	var options map[string]*Option
 	if command == nil {
-		options = p.globalOptions
+		options = p.options
 	} else {
 		options = command.options
 	}
