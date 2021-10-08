@@ -15,6 +15,8 @@ type Program struct {
 	arguments     []*Argument
 
 	command *Command
+
+	verbose bool
 }
 
 type Command struct {
@@ -265,6 +267,10 @@ func (p *Program) mustArgument(name string) *Argument {
 }
 
 func (p *Program) Info(format string, args ...interface{}) {
+	if !p.verbose {
+		return
+	}
+
 	fmt.Fprintf(os.Stderr, format+"\n", args...)
 }
 
@@ -286,6 +292,8 @@ func (p *Program) Start() {
 		os.Exit(0)
 	}
 
+	p.verbose = p.IsOptionSet("verbose")
+
 	p.run()
 }
 
@@ -303,6 +311,7 @@ func (p *Program) run() {
 
 func (p *Program) addDefaultOptions() {
 	p.AddGlobalFlag("h", "help", "print help and exit")
+	p.AddGlobalFlag("v", "verbose", "print status and information messages")
 }
 
 func (p *Program) addDefaultCommands() {
@@ -322,8 +331,7 @@ func cmdHelp(p *Program) {
 	} else {
 		for i, commandName := range commandNames {
 			if i > 0 {
-				p.Info("")
-				p.Info("")
+				fmt.Fprintf(os.Stderr, "\n\n")
 			}
 
 			command, found := p.commands[commandName]
@@ -340,7 +348,7 @@ func cmdHelp(p *Program) {
 func (p *Program) fatal(format string, args ...interface{}) {
 	p.Error(format, args...)
 
-	p.Info("")
+	fmt.Fprintf(os.Stderr, "\n")
 
 	if p.command == nil {
 		p.PrintUsage(nil)

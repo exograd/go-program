@@ -27,6 +27,8 @@ func main() {
 }
 
 func cmdFoo(p *program.Program) {
+	p.Info("running command foo")
+
 	fmt.Printf("flag-a: %v\n", p.IsOptionSet("flag-a"))
 	fmt.Printf("b: %v\n", p.IsOptionSet("b"))
 	fmt.Printf("option-c: %s\n", p.OptionValue("option-c"))
@@ -42,6 +44,8 @@ func cmdFoo(p *program.Program) {
 }
 
 func cmdBar(p *program.Program) {
+	p.Info("running command bar")
+
 	fmt.Printf("flag-a: %v\n", p.IsOptionSet("flag-a"))
 	fmt.Printf("b: %v\n", p.IsOptionSet("b"))
 	fmt.Printf("option-c: %s\n", p.OptionValue("option-c"))
