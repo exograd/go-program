@@ -83,7 +83,19 @@ func (p *Program) PrintUsage(command *Command) {
 	}
 
 	if hasOptions {
-		p.usageOptions(&buf, options, maxWidth)
+		allOptions := make(map[string]*Option)
+
+		for name, opt := range p.options {
+			allOptions[name] = opt
+		}
+
+		if command != nil {
+			for name, opt := range command.options {
+				allOptions[name] = opt
+			}
+		}
+
+		p.usageOptions(&buf, allOptions, maxWidth)
 	}
 
 	io.Copy(os.Stderr, &buf)
