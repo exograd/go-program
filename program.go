@@ -36,7 +36,7 @@ type Program struct {
 }
 
 func NewProgram(name, description string) *Program {
-	return &Program{
+	p := &Program{
 		Name:        name,
 		Description: description,
 
@@ -44,6 +44,10 @@ func NewProgram(name, description string) *Program {
 
 		options: make(map[string]*Option),
 	}
+
+	p.addDefaultOptions()
+
+	return p
 }
 
 func (p *Program) SetMain(main Main) {

@@ -242,8 +242,6 @@ func (p *Program) mustArgument(name string) *Argument {
 }
 
 func (p *Program) ParseCommandLine() {
-	p.addDefaultOptions()
-
 	if len(p.commands) > 0 {
 		p.addDefaultCommands()
 	}
