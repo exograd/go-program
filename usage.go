@@ -131,7 +131,7 @@ func (p *Program) computeMaxWidth(command *Command) int {
 	}
 
 	for _, opt := range options {
-		length := 1 + len(opt.ShortName) + 2 + 2 + len(opt.LongName)
+		length := 1 + 2 + 2 + 2 + len(opt.LongName)
 		if opt.ValueName != "" {
 			length += 2 + len(opt.ValueName) + 1
 		}
