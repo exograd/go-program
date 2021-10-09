@@ -195,7 +195,12 @@ func (p *Program) IsOptionSet(name string) bool {
 }
 
 func (p *Program) OptionValue(name string) string {
-	return p.mustOption(name).Value
+	opt := p.mustOption(name)
+	if !opt.Set {
+		return opt.DefaultValue
+	}
+
+	return opt.Value
 }
 
 func (p *Program) mustOption(name string) *Option {
