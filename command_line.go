@@ -269,7 +269,11 @@ func (p *Program) addDefaultCommands() {
 func cmdHelp(p *Program) {
 	var commandNames []string
 	if p.command != nil {
-		commandNames = p.TrailingArgumentValues("command")
+		if p.command.Name == "help" {
+			commandNames = p.TrailingArgumentValues("command")
+		} else {
+			commandNames = append(commandNames, p.command.Name)
+		}
 	}
 
 	if len(commandNames) == 0 {
