@@ -39,6 +39,7 @@ func main() {
 
 	p.AddCommand("bar", "bar command", cmdBar)
 
+	p.ParseCommandLine()
 	p.Run()
 }
 

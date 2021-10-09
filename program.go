@@ -293,7 +293,7 @@ func (p *Program) Fatal(format string, args ...interface{}) {
 	os.Exit(1)
 }
 
-func (p *Program) Run() {
+func (p *Program) ParseCommandLine() {
 	p.addDefaultOptions()
 
 	if len(p.commands) > 0 {
@@ -308,7 +308,9 @@ func (p *Program) Run() {
 	}
 
 	p.verbose = p.IsOptionSet("verbose")
+}
 
+func (p *Program) Run() {
 	var main Main
 	if p.command == nil {
 		main = p.Main
