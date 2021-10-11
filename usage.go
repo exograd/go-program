@@ -35,21 +35,24 @@ func (p *Program) PrintUsage(command *Command) {
 	hasCommands := len(p.commands) > 0
 
 	var arguments []*Argument
-	var options map[string]*Option
 	var description string
 
 	if command == nil {
 		arguments = p.arguments
-		options = p.options
 		description = p.Description
 	} else {
 		arguments = command.arguments
-		options = command.options
 		description = command.Description
 	}
 
 	hasArguments := len(arguments) > 0
-	hasOptions := len(options) > 0
+
+	var hasOptions bool
+	if command == nil {
+		hasOptions = len(p.options) > 0
+	} else {
+		hasOptions = len(p.options) > 0 || len(command.options) > 0
+	}
 
 	maxWidth := p.computeMaxWidth(command)
 
