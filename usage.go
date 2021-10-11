@@ -47,13 +47,6 @@ func (p *Program) PrintUsage(command *Command) {
 
 	hasArguments := len(arguments) > 0
 
-	var hasOptions bool
-	if command == nil {
-		hasOptions = len(p.options) > 0
-	} else {
-		hasOptions = len(p.options) > 0 || len(command.options) > 0
-	}
-
 	maxWidth := p.computeMaxWidth(command)
 
 	if command == nil && hasCommands {
@@ -85,20 +78,16 @@ func (p *Program) PrintUsage(command *Command) {
 		p.usageArguments(&buf, arguments, maxWidth)
 	}
 
-	if hasOptions {
-		allOptions := make(map[string]*Option)
-
-		for name, opt := range p.options {
-			allOptions[name] = opt
+	if len(p.options) > 0 {
+		if command != nil && len(command.options) > 0 {
+			p.usageOptions(&buf, "GLOBAL OPTIONS", p.options, maxWidth)
+		} else {
+			p.usageOptions(&buf, "OPTIONS", p.options, maxWidth)
 		}
+	}
 
-		if command != nil {
-			for name, opt := range command.options {
-				allOptions[name] = opt
-			}
-		}
-
-		p.usageOptions(&buf, allOptions, maxWidth)
+	if command != nil && len(command.options) > 0 {
+		p.usageOptions(&buf, "COMMAND OPTIONS", command.options, maxWidth)
 	}
 
 	io.Copy(os.Stderr, &buf)
@@ -175,8 +164,8 @@ func (p *Program) usageArguments(buf *bytes.Buffer, args []*Argument, maxWidth i
 	}
 }
 
-func (p *Program) usageOptions(buf *bytes.Buffer, options map[string]*Option, maxWidth int) {
-	fmt.Fprintf(buf, "\nOPTIONS\n\n")
+func (p *Program) usageOptions(buf *bytes.Buffer, label string, options map[string]*Option, maxWidth int) {
+	fmt.Fprintf(buf, "\n%s\n\n", label)
 
 	strs := make(map[*Option]string)
 
