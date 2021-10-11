@@ -126,14 +126,7 @@ func (p *Program) computeMaxWidth(command *Command) int {
 		}
 	}
 
-	var options map[string]*Option
-	if command == nil {
-		options = p.options
-	} else {
-		options = command.options
-	}
-
-	for _, opt := range options {
+	f := func(opt *Option) {
 		length := 2 + 2 + 2 + len(opt.LongName)
 		if opt.ValueName != "" {
 			length += 2 + len(opt.ValueName) + 1
@@ -141,6 +134,16 @@ func (p *Program) computeMaxWidth(command *Command) int {
 
 		if length > max {
 			max = length
+		}
+	}
+
+	for _, opt := range p.options {
+		f(opt)
+	}
+
+	if command != nil {
+		for _, opt := range command.options {
+			f(opt)
 		}
 	}
 
