@@ -16,7 +16,9 @@ package program
 
 import (
 	"fmt"
+	"math"
 	"os"
+	"strconv"
 )
 
 type Command struct {
@@ -259,11 +261,22 @@ func (p *Program) ParseCommandLine() {
 	}
 
 	p.verbose = p.IsOptionSet("verbose")
+
+	if p.IsOptionSet("debug") {
+		s := p.OptionValue("debug")
+		i, err := strconv.ParseInt(s, 10, 64)
+		if err != nil || i < 0 || i > math.MaxInt32 {
+			p.fatal("invalid debug level %v", s)
+		}
+
+		p.debugLevel = int(i)
+	}
 }
 
 func (p *Program) addDefaultOptions() {
 	p.AddFlag("h", "help", "print help and exit")
 	p.AddFlag("v", "verbose", "print status and information messages")
+	p.AddOption("", "debug", "level", "0", "print debug messages")
 }
 
 func (p *Program) addDefaultCommands() {

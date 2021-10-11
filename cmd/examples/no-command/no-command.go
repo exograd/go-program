@@ -36,6 +36,9 @@ func main() {
 	p.SetMain(main2)
 
 	p.ParseCommandLine()
+
+	p.Debug(2, "running program")
+
 	p.Run()
 }
 

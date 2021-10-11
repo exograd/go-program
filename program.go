@@ -32,7 +32,8 @@ type Program struct {
 
 	command *Command
 
-	verbose bool
+	verbose    bool
+	debugLevel int
 }
 
 func NewProgram(name, description string) *Program {
@@ -67,6 +68,14 @@ func (p *Program) Run() {
 	}
 
 	main(p)
+}
+
+func (p *Program) Debug(level int, format string, args ...interface{}) {
+	if level > p.debugLevel {
+		return
+	}
+
+	fmt.Fprintf(os.Stderr, format+"\n", args...)
 }
 
 func (p *Program) Info(format string, args ...interface{}) {
