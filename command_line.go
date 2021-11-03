@@ -260,7 +260,7 @@ func (p *Program) ParseCommandLine() {
 		os.Exit(0)
 	}
 
-	p.verbose = p.IsOptionSet("verbose")
+	p.quiet = p.IsOptionSet("quiet")
 
 	if p.IsOptionSet("debug") {
 		s := p.OptionValue("debug")
@@ -275,7 +275,7 @@ func (p *Program) ParseCommandLine() {
 
 func (p *Program) addDefaultOptions() {
 	p.AddFlag("h", "help", "print help and exit")
-	p.AddFlag("v", "verbose", "print status and information messages")
+	p.AddFlag("q", "quiet", "do not print status and information messages")
 	p.AddOption("", "debug", "level", "0", "print debug messages")
 }
 

@@ -32,7 +32,7 @@ type Program struct {
 
 	command *Command
 
-	verbose    bool
+	quiet      bool
 	debugLevel int
 }
 
@@ -79,7 +79,7 @@ func (p *Program) Debug(level int, format string, args ...interface{}) {
 }
 
 func (p *Program) Info(format string, args ...interface{}) {
-	if !p.verbose {
+	if p.quiet {
 		return
 	}
 
