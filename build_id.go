@@ -78,7 +78,7 @@ func (id *BuildId) Parse(s string) error {
 	return nil
 }
 
-func (id1 BuildId) Equal(id2 BuildId) bool {
+func (id1 BuildId) EqualTo(id2 BuildId) bool {
 	return id1.Major == id2.Major &&
 		id1.Minor == id2.Minor &&
 		id1.Patch == id2.Patch &&
