@@ -77,3 +77,43 @@ func (id *BuildId) Parse(s string) error {
 
 	return nil
 }
+
+func (id1 BuildId) Equal(id2 BuildId) bool {
+	return id1.Major == id2.Major &&
+		id1.Minor == id2.Minor &&
+		id1.Patch == id2.Patch &&
+		id1.NbCommits == id2.NbCommits &&
+		id1.Revision == id2.Revision
+}
+
+func (id1 BuildId) LowerOrEqualTo(id2 BuildId) bool {
+	if id1.Major < id2.Major {
+		return true
+	} else if id1.Major > id2.Major {
+		return false
+	}
+
+	if id1.Minor < id2.Minor {
+		return true
+	} else if id1.Minor > id2.Minor {
+		return false
+	}
+
+	if id1.Patch < id2.Patch {
+		return true
+	} else if id1.Patch > id2.Patch {
+		return false
+	}
+
+	n1 := 0
+	if id1.NbCommits != nil {
+		n1 = *id1.NbCommits
+	}
+
+	n2 := 0
+	if id2.NbCommits != nil {
+		n2 = *id2.NbCommits
+	}
+
+	return n1 <= n2
+}
