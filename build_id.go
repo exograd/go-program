@@ -86,7 +86,7 @@ func (id1 BuildId) EqualTo(id2 BuildId) bool {
 		id1.Revision == id2.Revision
 }
 
-func (id1 BuildId) LowerOrEqualTo(id2 BuildId) bool {
+func (id1 BuildId) LowerThanOrEqualTo(id2 BuildId) bool {
 	if id1.Major < id2.Major {
 		return true
 	} else if id1.Major > id2.Major {
