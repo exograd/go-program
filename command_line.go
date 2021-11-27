@@ -147,6 +147,8 @@ func (p *Program) addOption(c *Command, option *Option) {
 }
 
 func (p *Program) AddArgument(name, description string) {
+	checkForArgument(p.arguments)
+
 	arg := &Argument{
 		Name:        name,
 		Description: description,
@@ -156,6 +158,8 @@ func (p *Program) AddArgument(name, description string) {
 }
 
 func (p *Program) AddTrailingArgument(name, description string) {
+	checkForTrailingArgument(p.arguments)
+
 	arg := &Argument{
 		Name:        name,
 		Description: description,
@@ -166,6 +170,8 @@ func (p *Program) AddTrailingArgument(name, description string) {
 }
 
 func (c *Command) AddArgument(name, description string) {
+	checkForArgument(c.arguments)
+
 	arg := &Argument{
 		Name:        name,
 		Description: description,
@@ -175,6 +181,8 @@ func (c *Command) AddArgument(name, description string) {
 }
 
 func (c *Command) AddTrailingArgument(name, description string) {
+	checkForTrailingArgument(c.arguments)
+
 	arg := &Argument{
 		Name:        name,
 		Description: description,
@@ -182,6 +190,30 @@ func (c *Command) AddTrailingArgument(name, description string) {
 	}
 
 	c.arguments = append(c.arguments, arg)
+}
+
+func checkForArgument(args []*Argument) {
+	if len(args) == 0 {
+		return
+	}
+
+	lastArg := args[len(args)-1]
+
+	if lastArg.Trailing {
+		panic("cannot add argument after trailing argument")
+	}
+}
+
+func checkForTrailingArgument(args []*Argument) {
+	if len(args) == 0 {
+		return
+	}
+
+	lastArg := args[len(args)-1]
+
+	if lastArg.Trailing {
+		panic("cannot add multiple trailing arguments")
+	}
 }
 
 func (p *Program) CommandName() string {
