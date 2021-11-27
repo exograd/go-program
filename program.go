@@ -62,6 +62,10 @@ func (p *Program) SetMain(main Main) {
 func (p *Program) Run() {
 	var main Main
 	if p.command == nil {
+		if p.Main == nil {
+			panic("missing main function")
+		}
+
 		main = p.Main
 	} else {
 		main = p.command.Main
