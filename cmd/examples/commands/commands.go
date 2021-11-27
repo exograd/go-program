@@ -37,7 +37,8 @@ func main() {
 	cmd.AddArgument("arg-2", "the second argument")
 	cmd.AddTrailingArgument("arg-3", "all trailing arguments")
 
-	p.AddCommand("bar", "bar command", cmdBar)
+	cmd = p.AddCommand("bar", "bar command", cmdBar)
+	cmd.AddOptionalArgument("arg-opt", "the optional argument")
 
 	p.ParseCommandLine()
 	p.Run()
@@ -66,4 +67,6 @@ func cmdBar(p *program.Program) {
 	fmt.Printf("flag-a: %v\n", p.IsOptionSet("flag-a"))
 	fmt.Printf("b: %v\n", p.IsOptionSet("b"))
 	fmt.Printf("option-c: %s\n", p.OptionValue("option-c"))
+
+	fmt.Printf("arg-opt: %s\n", p.ArgumentValue("arg-opt"))
 }

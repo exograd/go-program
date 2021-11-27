@@ -57,6 +57,8 @@ func (p *Program) PrintUsage(command *Command) {
 		for _, arg := range arguments {
 			if arg.Trailing {
 				fmt.Fprintf(&argBuf, " [<%s>...]", arg.Name)
+			} else if arg.Optional {
+				fmt.Fprintf(&argBuf, " [<%s>]", arg.Name)
 			} else {
 				fmt.Fprintf(&argBuf, " <%s>", arg.Name)
 			}

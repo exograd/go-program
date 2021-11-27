@@ -46,8 +46,10 @@ type Option struct {
 type Argument struct {
 	Name        string
 	Description string
+	Optional    bool
 	Trailing    bool
 
+	Set            bool
 	Value          string
 	TrailingValues []string
 }
@@ -157,6 +159,18 @@ func (p *Program) AddArgument(name, description string) {
 	p.arguments = append(p.arguments, arg)
 }
 
+func (p *Program) AddOptionalArgument(name, description string) {
+	checkForOptionalArgument(p.arguments)
+
+	arg := &Argument{
+		Name:        name,
+		Description: description,
+		Optional:    true,
+	}
+
+	p.arguments = append(p.arguments, arg)
+}
+
 func (p *Program) AddTrailingArgument(name, description string) {
 	checkForTrailingArgument(p.arguments)
 
@@ -180,6 +194,18 @@ func (c *Command) AddArgument(name, description string) {
 	c.arguments = append(c.arguments, arg)
 }
 
+func (c *Command) AddOptionalArgument(name, description string) {
+	checkForOptionalArgument(c.arguments)
+
+	arg := &Argument{
+		Name:        name,
+		Description: description,
+		Optional:    true,
+	}
+
+	c.arguments = append(c.arguments, arg)
+}
+
 func (c *Command) AddTrailingArgument(name, description string) {
 	checkForTrailingArgument(c.arguments)
 
@@ -193,6 +219,22 @@ func (c *Command) AddTrailingArgument(name, description string) {
 }
 
 func checkForArgument(args []*Argument) {
+	if len(args) == 0 {
+		return
+	}
+
+	lastArg := args[len(args)-1]
+
+	if lastArg.Optional {
+		panic("cannot add non-optional argument after optional argument")
+	}
+
+	if lastArg.Trailing {
+		panic("cannot add argument after trailing argument")
+	}
+}
+
+func checkForOptionalArgument(args []*Argument) {
 	if len(args) == 0 {
 		return
 	}

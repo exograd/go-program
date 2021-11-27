@@ -31,7 +31,9 @@ func main() {
 
 	p.AddArgument("arg-1", "the first argument")
 	p.AddArgument("arg-2", "the second argument")
-	p.AddTrailingArgument("arg-3", "all trailing arguments")
+	p.AddOptionalArgument("arg-opt-1", "the first optional argument")
+	p.AddOptionalArgument("arg-opt-2", "the second optional argument")
+	p.AddTrailingArgument("arg-trailing", "all trailing arguments")
 
 	p.SetMain(main2)
 
@@ -49,8 +51,12 @@ func main2(p *program.Program) {
 
 	fmt.Printf("arg-1: %s\n", p.ArgumentValue("arg-1"))
 	fmt.Printf("arg-2: %s\n", p.ArgumentValue("arg-2"))
-	fmt.Printf("arg-3:")
-	for _, value := range p.TrailingArgumentValues("arg-3") {
+
+	fmt.Printf("arg-opt-1: %s\n", p.ArgumentValue("arg-opt-1"))
+	fmt.Printf("arg-opt-2: %s\n", p.ArgumentValue("arg-opt-2"))
+
+	fmt.Printf("arg-trailing:")
+	for _, value := range p.TrailingArgumentValues("arg-trailing") {
 		fmt.Printf(" %s", value)
 	}
 	fmt.Printf("\n")

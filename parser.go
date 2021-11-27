@@ -102,11 +102,14 @@ func (p *Program) parseCommand(args []string) []string {
 
 func (p *Program) parseArguments(args []string, arguments []*Argument) []string {
 	if len(arguments) > 0 {
-		last := arguments[len(arguments)-1]
+		// Mandatory arguments
+		min := 0
+		for _, argument := range arguments {
+			if argument.Optional || argument.Trailing {
+				break
+			}
 
-		min := len(arguments)
-		if last.Trailing {
-			min--
+			min++
 		}
 
 		if len(args) < min {
@@ -114,15 +117,42 @@ func (p *Program) parseArguments(args []string, arguments []*Argument) []string 
 		}
 
 		for i := 0; i < min; i++ {
-			arguments[i].Value = args[i]
+			argument := arguments[i]
+
+			argument.Set = true
+			argument.Value = args[i]
 		}
 
 		args = args[min:]
+		arguments = arguments[min:]
 
-		if last.Trailing {
-			last.TrailingValues = args
+		// Optional arguments
+		var trailingArgument *Argument
 
+		for _, argument := range arguments {
+			if len(args) == 0 {
+				break
+			}
+
+			if argument.Trailing {
+				trailingArgument = argument
+				break
+			}
+
+			argument.Set = true
+			argument.Value = args[0]
+
+			args = args[1:]
+		}
+
+		// Trailing argument
+		if trailingArgument != nil {
+			trailingArgument.TrailingValues = args
 			args = args[len(args):]
+		} else {
+			if len(args) > 0 {
+				p.fatal("too many arguments")
+			}
 		}
 	}
 
