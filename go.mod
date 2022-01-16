@@ -1,4 +1,4 @@
-module github.com/galdor/go-program
+module github.com/exograd/go-program
 
 go 1.17
 
