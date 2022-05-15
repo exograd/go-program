@@ -335,7 +335,7 @@ func (p *Program) ParseCommandLine() {
 		os.Exit(0)
 	}
 
-	p.quiet = p.IsOptionSet("quiet")
+	p.Quiet = p.IsOptionSet("quiet")
 
 	if p.IsOptionSet("debug") {
 		s := p.OptionValue("debug")
@@ -344,7 +344,7 @@ func (p *Program) ParseCommandLine() {
 			p.fatal("invalid debug level %v", s)
 		}
 
-		p.debugLevel = int(i)
+		p.DebugLevel = int(i)
 	}
 }
 

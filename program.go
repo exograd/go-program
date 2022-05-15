@@ -33,8 +33,8 @@ type Program struct {
 
 	command *Command
 
-	quiet      bool
-	debugLevel int
+	Quiet      bool
+	DebugLevel int
 }
 
 func NewProgram(name, description string) *Program {
@@ -76,7 +76,7 @@ func (p *Program) Run() {
 }
 
 func (p *Program) Debug(level int, format string, args ...interface{}) {
-	if level > p.debugLevel {
+	if level > p.DebugLevel {
 		return
 	}
 
@@ -84,7 +84,7 @@ func (p *Program) Debug(level int, format string, args ...interface{}) {
 }
 
 func (p *Program) Info(format string, args ...interface{}) {
-	if p.quiet {
+	if p.Quiet {
 		return
 	}
 
